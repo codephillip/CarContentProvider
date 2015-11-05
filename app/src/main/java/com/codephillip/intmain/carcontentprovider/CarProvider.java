@@ -6,6 +6,7 @@ import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.util.Log;
 
 public class CarProvider extends ContentProvider {
     CarDbHelper carDbHelper;
@@ -32,8 +33,24 @@ public class CarProvider extends ContentProvider {
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
-        // Implement this to handle requests to delete one or more rows.
-        throw new UnsupportedOperationException("Not yet implemented");
+        int rowsDeleted;
+        SQLiteDatabase db = carDbHelper.getWritableDatabase();
+        Log.d("CONTENT_DELETE: ", "STARTED DELETE");
+        if (selection == null) selection = "1";
+        switch (sUriMatcher.match(uri)){
+            case PATH_BIGCAR:
+                rowsDeleted = db.delete(CarContract.BigCar.TABLE_NAME, selection, selectionArgs);
+                break;
+            case PATH_SMALLCAR:
+                rowsDeleted = db.delete(CarContract.SmallCar.TABLE_NAME, selection, selectionArgs);
+                break;
+            default:
+                throw new UnsupportedOperationException("Unknown uri "+uri);
+        }
+        if (rowsDeleted != 0){
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+        return rowsDeleted;
     }
 
     @Override
@@ -56,6 +73,7 @@ public class CarProvider extends ContentProvider {
     public Uri insert(Uri uri, ContentValues values) {
         Uri retUri;
         SQLiteDatabase db = carDbHelper.getWritableDatabase();
+        Log.d("CONTENT_PROVIDER: ","INSERTING");
         switch (sUriMatcher.match(uri)){
             case PATH_BIGCAR:{
                 long id = db.insert(CarContract.BigCar.TABLE_NAME, null, values);
