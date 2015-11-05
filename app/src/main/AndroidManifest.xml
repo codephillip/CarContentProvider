@@ -15,6 +15,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <provider
+            android:name=".CarProvider"
+            android:authorities="com.codephillip.intmain.carcontentprovider"
+            android:enabled="true"
+            android:exported="true" >
+        </provider>
     </application>
 
 </manifest>
