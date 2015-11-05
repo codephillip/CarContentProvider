@@ -37,9 +37,18 @@ public class CarProvider extends ContentProvider {
 
     @Override
     public String getType(Uri uri) {
-        // TODO: Implement this to handle requests for the MIME type of the data
-        // at the given URI.
-        throw new UnsupportedOperationException("Not yet implemented");
+        switch (sUriMatcher.match(uri)){
+            case PATH_BIGCAR:
+                return CarContract.BigCar.CONTENT_TYPE;
+            case PATH_BIGCAR_WITH_ITEM:
+                return CarContract.BigCar.CONTENT_ITEM_TYPE;
+            case PATH_SMALLCAR:
+                return CarContract.SmallCar.CONTENT_TYPE;
+            case PATH_SMALLCAR_WITH_ITEM:
+                return CarContract.SmallCar.CONTENT_ITEM_TYPE;
+            default:
+                throw new UnsupportedOperationException("Unknown Uri: "+uri);
+        }
     }
 
     @Override
