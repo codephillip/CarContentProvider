@@ -91,10 +91,59 @@ public class CarProvider extends ContentProvider {
     }
 
     @Override
-    public Cursor query(Uri uri, String[] projection, String selection,
-                        String[] selectionArgs, String sortOrder) {
-        // TODO: Implement this to handle query requests from clients.
-        throw new UnsupportedOperationException("Not yet implemented");
+    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
+        Cursor cursor;
+        SQLiteDatabase db = carDbHelper.getReadableDatabase();
+        switch (sUriMatcher.match(uri)){
+            case PATH_BIGCAR:
+                cursor = db.query(
+                        CarContract.BigCar.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder
+                        );
+                break;
+            case PATH_BIGCAR_WITH_ITEM:
+                cursor = db.query(
+                        CarContract.BigCar.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder
+                        );
+                break;
+            case PATH_SMALLCAR:
+                cursor = db.query(
+                        CarContract.SmallCar.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder
+                );
+                break;
+            case PATH_SMALLCAR_WITH_ITEM:
+                cursor = db.query(
+                        CarContract.SmallCar.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder
+                );
+                break;
+            default:
+                throw new UnsupportedOperationException("Not yet implemented");
+        }
+        cursor.setNotificationUri(getContext().getContentResolver(), uri);
+        return cursor;
     }
 
     @Override
