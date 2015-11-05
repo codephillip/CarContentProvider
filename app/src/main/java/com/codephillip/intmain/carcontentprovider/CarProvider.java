@@ -4,6 +4,7 @@ import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 
 public class CarProvider extends ContentProvider {
@@ -53,8 +54,34 @@ public class CarProvider extends ContentProvider {
 
     @Override
     public Uri insert(Uri uri, ContentValues values) {
-        // TODO: Implement this to handle requests to insert a new row.
-        throw new UnsupportedOperationException("Not yet implemented");
+        Uri retUri;
+        SQLiteDatabase db = carDbHelper.getWritableDatabase();
+        switch (sUriMatcher.match(uri)){
+            case PATH_BIGCAR:{
+                long id = db.insert(CarContract.BigCar.TABLE_NAME, null, values);
+                if (id > 0){
+                    retUri = CarContract.BigCar.buildUri(id);
+                }
+                else {
+                    throw new android.database.SQLException("Failed to insert into table: "+uri);
+                }
+                break;
+            }
+            case PATH_SMALLCAR:{
+                long id = db.insert(CarContract.SmallCar.TABLE_NAME, null, values);
+                if (id > 0){
+                    retUri = CarContract.SmallCar.buildUri(id);
+                }
+                else {
+                    throw new android.database.SQLException("Failed to insert into table: "+uri);
+                }
+                break;
+            }
+            default:
+                throw new UnsupportedOperationException("Unknown Uri "+uri);
+        }
+        getContext().getContentResolver().notifyChange(uri, null);
+        return retUri;
     }
 
     @Override
